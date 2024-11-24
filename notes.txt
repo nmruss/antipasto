@@ -1,0 +1,20 @@
+Things needed:
+
+Image Parser
+-This image parsing functionality should return:
+    -The top left corner of the image
+    -The size of the image
+    -A quantized and trimmed (to alpha's) version of the image
+
+CLI interface
+-A cli interface with functions for:
+    -Initializing pack functionality on a list of banners
+    -Help menu
+    -Initializing pack functionality on a single banner
+    -Listing banner folders available for processing
+
+File Write
+-A function for writing valid html and css
+    -Write to html files in banner folders
+    -Write to css files in banner folders
+    -Write trimmed images to banner img folders
