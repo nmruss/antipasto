@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	Reader();
+	Reader()
 }
 
 func Reader() string {
