@@ -9,6 +9,11 @@ import (
 	"strings"
 )
 
+type BannerFolder struct {
+	Name       string
+	Subfolders []string
+}
+
 func FolderValid(path string) bool {
 	/*
 		Tests the validity of a banner folder structure
@@ -24,15 +29,49 @@ func FolderValid(path string) bool {
 
 		Note: this function can ignore other folders intentionally, allowing for build flexibility
 	*/
+	var bannerFolders map[string]BannerFolder = getBannerFolders(path)
 
-	type BannerFolder struct {
-		Name       string
-		Subfolders []string
+	for _, v := range bannerFolders {
+		if !checkSubfolderStructure(v) {
+			return false
+		}
 	}
 
-	var bannerFolders map[string]BannerFolder = make(map[string]BannerFolder)
+	return true
+}
 
-	//Populate banner folders array
+func checkSubfolderStructure(folder BannerFolder) bool {
+	//checks the subfolder structure of a passed in BannerFolder struct
+	var needs = map[string]bool{
+		"src/main.js":     false,
+		"styles/main.css": false,
+		"index.html":      false,
+	}
+
+	for key := range needs {
+		for _, e := range folder.Subfolders {
+			if strings.Contains(e, key) {
+				needs[key] = true
+				break
+			}
+		}
+	}
+
+	for _, v := range needs {
+		if !v {
+			return false
+		}
+	}
+
+	return true
+}
+
+func getBannerFolders(path string) map[string]BannerFolder {
+	//Accepts a path string and returns a map of all banner sub-folders, along with array lists of their subfolders in the format:
+	//Folder Name: digits x digits
+	//	list of subfolders: [path,path]
+
+	var bannerFolders map[string]BannerFolder = make(map[string]BannerFolder)
 	filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -44,10 +83,12 @@ func FolderValid(path string) bool {
 
 		if dirNameMatchErr != nil {
 			fmt.Println(dirNameMatchErr)
+			return dirNameMatchErr
 		}
 
 		if pathMatchErr != nil {
 			fmt.Println(pathMatchErr)
+			return pathMatchErr
 		}
 
 		pathLoc := pathMatchObj.FindIndex(bytePath)
@@ -70,7 +111,5 @@ func FolderValid(path string) bool {
 		return nil
 	})
 
-	fmt.Println(bannerFolders)
-
-	return true
+	return bannerFolders
 }
