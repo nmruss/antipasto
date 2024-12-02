@@ -42,9 +42,10 @@ A project folder structure should look like the below:
         *.jpg
         *.svg
     /output
-        css/
-            style.css
-        src/
-            main.js
-        index.html
+        /300x250
+            css/
+                style.css
+            src/
+                main.js
+            index.html
 
