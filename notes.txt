@@ -29,6 +29,8 @@ Configuration tools
 -Configuration file for configuring the project:
     -Input and Output folders
     -Image parsing settings
+        -Size warnings
+        -Quantization / processing
     -Ignore functionality
     -If HTML / CSS should be written
     -HTML root div
