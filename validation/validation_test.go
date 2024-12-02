@@ -1,4 +1,4 @@
-package navigation
+package validation
 
 import (
 	"testing"

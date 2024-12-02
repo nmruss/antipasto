@@ -1,5 +1,5 @@
 // A collection of functions for navigating, interpreting, and validating folder structure
-package navigation
+package validation
 
 import (
 	"fmt"
@@ -48,7 +48,7 @@ func checkSubfolderStructure(folder BannerFolder) bool {
 		"index.html":      false,
 	}
 
-	//Note: this is O(n^2), can probably find a more efficient solution
+	//Note: this is O(n^2), can probably find a more efficient solution w/ hashmap
 	for key := range needs {
 		for _, e := range folder.Subfolders {
 			if strings.Contains(e, key) {
