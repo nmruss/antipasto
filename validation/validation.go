@@ -14,20 +14,62 @@ type BannerFolder struct {
 	Subfolders []string
 }
 
+func ProjectValid(projectPath string) bool {
+	/*
+		Tests the validty of a project folder structure
+
+		Note: An empty input folder IS allowed
+		Note: Folders that are not named with [size]x[size] will be ignored, citing build flexibility
+
+		This function will check for a valid project structure in the following format:
+
+		root
+			input/
+			output/
+				...at least one valid banner folder
+
+	*/
+	var inputExists bool = false
+	var outputExists bool = false
+
+	//read project path for 'input' and 'output' folders
+	filepath.WalkDir(projectPath, func(p string, d fs.DirEntry, err error) error {
+		if err != nil {
+			return err
+		}
+
+		//very opinionated, may want to add configuration here?
+		if d.Name() == "input" {
+			inputExists = true
+		}
+		if d.Name() == "output" {
+			outputExists = true
+		}
+
+		if inputExists && outputExists {
+			return fmt.Errorf("input and output found, exiting early")
+		}
+
+		return nil
+	})
+
+	return inputExists && outputExists
+}
+
 func FolderValid(path string) bool {
 	/*
 		Tests the validity of a banner folder structure
 
 		The function returns true if the following holds:
 
-		Any subfolder of a banner parent folder named in the format 'integer'x'integer' contains:
+		Any subfolder of a banner parent folder named in the format [integer]x[integer] contains:
 			-src/main.js
 			-styles/main.css
 			index.html
 
 		If this is untrue return false
 
-		Note: this function can ignore other folders intentionally, allowing for build flexibility
+		Note: this function will ignore other folders intentionally, allowing for build flexibility
 	*/
 	var bannerFolders map[string]BannerFolder = getBannerFolders(path)
 

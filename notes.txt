@@ -1,4 +1,4 @@
-Things needed:
+------ THINGS NEEDED ------
 
 Image Parser
 -This image parsing functionality should return:
@@ -34,6 +34,7 @@ Configuration tools
     -Ignore functionality
     -If HTML / CSS should be written
     -HTML root div
+
 
 ------ PROJECT STRUCTURE -------
 A project folder structure should look like the below:
