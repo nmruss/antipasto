@@ -12,9 +12,39 @@ CLI interface
     -Help menu
     -Initializing pack functionality on a single banner
     -Listing banner folders available for processing
+    -Look into Cobra?
 
-File Write
+File Writing
 -A function for writing valid html and css
     -Write to html files in banner folders
     -Write to css files in banner folders
     -Write trimmed images to banner img folders
+
+Testing and Validity Suite
+-A function for testing folder structures and reporting issues to users
+    -Test the validity of banner output folders
+    -Test the validity of image input folders
+
+Configuration tools
+-Configuration file for configuring the project:
+    -Input and Output folders
+    -Image parsing settings
+    -Ignore functionality
+    -If HTML / CSS should be written
+    -HTML root div
+
+------ PROJECT STRUCTURE -------
+A project folder structure should look like the below:
+
+/project_name
+    /input
+        *.png 
+        *.jpg
+        *.svg
+    /output
+        css/
+            style.css
+        src/
+            main.js
+        index.html
+

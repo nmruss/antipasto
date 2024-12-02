@@ -48,6 +48,7 @@ func checkSubfolderStructure(folder BannerFolder) bool {
 		"index.html":      false,
 	}
 
+	//Note: this is O(n^2), can probably find a more efficient solution
 	for key := range needs {
 		for _, e := range folder.Subfolders {
 			if strings.Contains(e, key) {
@@ -81,6 +82,7 @@ func getBannerFolders(path string) map[string]BannerFolder {
 		bytePath := []byte(p)
 		pathMatchObj, pathMatchErr := regexp.Compile(`\d+x\d+`)
 
+		//handle errors
 		if dirNameMatchErr != nil {
 			fmt.Println(dirNameMatchErr)
 			return dirNameMatchErr
@@ -94,6 +96,7 @@ func getBannerFolders(path string) map[string]BannerFolder {
 		pathLoc := pathMatchObj.FindIndex(bytePath)
 
 		if d.IsDir() && dirNameMatch {
+			//if not exists, set new empty bannerfolder in map
 			if _, ok := bannerFolders[d.Name()]; !ok {
 				var bf BannerFolder
 				bf.Name = d.Name()
