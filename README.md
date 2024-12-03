@@ -1,0 +1,1 @@
+Antipasto is a CLI tool for generating digital assets
