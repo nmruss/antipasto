@@ -53,7 +53,11 @@ func ProjectValid(projectPath string) bool {
 		return nil
 	})
 
-	return inputExists && outputExists
+	if inputExists && outputExists {
+		return FolderValid(projectPath)
+	} else {
+		return false
+	}
 }
 
 func FolderValid(path string) bool {
@@ -75,33 +79,6 @@ func FolderValid(path string) bool {
 
 	for _, v := range bannerFolders {
 		if !checkSubfolderStructure(v) {
-			return false
-		}
-	}
-
-	return true
-}
-
-func checkSubfolderStructure(folder BannerFolder) bool {
-	//checks the subfolder structure of a passed in BannerFolder struct
-	var needs = map[string]bool{
-		"src/main.js":     false,
-		"styles/main.css": false,
-		"index.html":      false,
-	}
-
-	//Note: this is O(n^2), can probably find a more efficient solution w/ hashmap
-	for key := range needs {
-		for _, e := range folder.Subfolders {
-			if strings.Contains(e, key) {
-				needs[key] = true
-				break
-			}
-		}
-	}
-
-	for _, v := range needs {
-		if !v {
 			return false
 		}
 	}
@@ -157,4 +134,31 @@ func getBannerFolders(path string) map[string]BannerFolder {
 	})
 
 	return bannerFolders
+}
+
+func checkSubfolderStructure(folder BannerFolder) bool {
+	//checks the subfolder structure of a passed in BannerFolder struct
+	var needs = map[string]bool{
+		"src/main.js":     false,
+		"styles/main.css": false,
+		"index.html":      false,
+	}
+
+	//Note: this is O(n^2), can probably find a more efficient solution w/ hashmap
+	for key := range needs {
+		for _, e := range folder.Subfolders {
+			if strings.Contains(e, key) {
+				needs[key] = true
+				break
+			}
+		}
+	}
+
+	for _, v := range needs {
+		if !v {
+			return false
+		}
+	}
+
+	return true
 }

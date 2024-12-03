@@ -33,3 +33,13 @@ func TestProjectInvalid(t *testing.T) {
 		t.Fatalf(`FolderValid('../testData/testInvalidProjectFolder') failed`)
 	}
 }
+
+func TestProjectValid(t *testing.T) {
+	//Test ProjectValid with an invalid input
+	//ProjectValid tests a project folder structure for validity == false
+	validProjectPath := "../testdata/testValidProjectFolder"
+	status := ProjectValid(validProjectPath)
+	if status != true {
+		t.Fatalf(`FolderValid('../testData/testInvalidProjectFolder') failed`)
+	}
+}
