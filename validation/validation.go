@@ -14,7 +14,7 @@ type BannerFolder struct {
 	Subfolders []string
 }
 
-func ProjectValid(projectPath string) bool {
+func IsProjectValid(projectPath string) bool {
 	/*
 		Tests the validty of a project folder structure
 
@@ -54,13 +54,13 @@ func ProjectValid(projectPath string) bool {
 	})
 
 	if inputExists && outputExists {
-		return FolderValid(projectPath)
+		return IsFolderValid(projectPath)
 	} else {
 		return false
 	}
 }
 
-func FolderValid(path string) bool {
+func IsFolderValid(path string) bool {
 	/*
 		Tests the validity of a banner folder structure
 
