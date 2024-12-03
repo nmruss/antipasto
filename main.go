@@ -1,25 +1,11 @@
+/*
+Copyright © 2024 NAME HERE <EMAIL ADDRESS>
+
+*/
 package main
 
-import (
-	"bufio"
-	"fmt"
-	"os"
-)
+import "nmruss/antipasto/cmd"
 
 func main() {
-	Reader()
-}
-
-func Reader() string {
-	reader := bufio.NewReader(os.Stdin)
-
-	fmt.Println("Enter a folder path containing banners")
-
-	path, err := reader.ReadString('\n')
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println(path)
-
-	return path
+	cmd.Execute()
 }
