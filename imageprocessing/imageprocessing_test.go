@@ -5,6 +5,7 @@ import (
 )
 
 func TestReadImage(t *testing.T) {
+	//Tests if ReadImage() function returns valid data on JPG's and PNG's
 	jpgImagePath := "../testdata/images/cat_1.jpg"
 	solidPNGImagePath := "../testdata/images/cat_2.png"
 	transparentPNGImagePath := "../testdata/images/cat_3.png"
