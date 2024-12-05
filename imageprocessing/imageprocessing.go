@@ -57,26 +57,25 @@ func readImage(imagePath string) ImageData {
 	}
 
 	//calculate top left non-transparent pixel for png positioning
+	//NOTE: look for efficiency here?
 	if isPNG {
 		coordinates := []int{0, 0}
 		for coordinates[0] < bounds.Max.X {
-			if checkAlpha(coordinates, &img) {
+			coordinates[1] = 0
+			for coordinates[1] < bounds.Max.Y {
+				if checkAlpha(coordinates, &img) {
+					break
+				}
+				coordinates[1]++
+			}
+
+			isAlpha := checkAlpha(coordinates, &img)
+			if isAlpha {
 				imgData.topX = coordinates[0]
 				imgData.topY = coordinates[1]
 				break
 			}
 
-			coordinates[1] = 0
-
-			for coordinates[1] < bounds.Max.Y {
-				if checkAlpha(coordinates, &img) {
-					imgData.topX = coordinates[0]
-					imgData.topY = coordinates[1]
-					break
-				}
-
-				coordinates[1]++
-			}
 			coordinates[0]++
 		}
 

@@ -5,11 +5,13 @@ import (
 )
 
 func TestReadImage(t *testing.T) {
-	pngImagePath := "../testdata/images/cat_1.jpg"
-	jpgImagePath := "../testdata/images/cat_2.png"
+	jpgImagePath := "../testdata/images/cat_1.jpg"
+	solidPNGImagePath := "../testdata/images/cat_2.png"
+	transparentPNGImagePath := "../testdata/images/cat_3.png"
 
-	pngData := readImage(pngImagePath)
+	solidPNGData := readImage(solidPNGImagePath)
 	jpgData := readImage(jpgImagePath)
+	transparentPNGData := readImage(transparentPNGImagePath)
 
 	if jpgData.width != 1024 {
 		t.Fatalf(`readImage('../testdata/images/cat_1.jpg) failed to return the correct width value`)
@@ -19,18 +21,19 @@ func TestReadImage(t *testing.T) {
 		t.Fatalf(`readImage('../testdata/image/cat_1.jpg) failed to reuturn the correct height value`)
 	}
 
-	if pngData.width != 1024 {
+	if solidPNGData.height != 1024 {
 		t.Fatalf(`readImage('../testdata/images/cat_2.png) failed to return the correct width value`)
 	}
 
-	if pngData.height != 1024 {
+	if solidPNGData.height != 1024 {
 		t.Fatalf(`readImage('../testdata/image/cat_2.png) failed to reuturn the correct height value`)
 	}
-	// if validFolderStatus == false {
-	// 	t.Fatalf(`FolderValid('../testData/valid_banner_folder') failed`)
-	// }
 
-	// if invalidFolderStatus == true {
-	// 	t.Fatalf(`FolderValid('../testData/invalid_banner_folder') failed`)
-	// }
+	if transparentPNGData.topX != 400 {
+		t.Fatalf(`readImage('../testdata/image/cat_3.png) failed to reuturn the correct topX value`)
+	}
+
+	if transparentPNGData.topY != 300 {
+		t.Fatalf(`readImage('../testdata/image/cat_3.png) failed to reuturn the correct topY value`)
+	}
 }
