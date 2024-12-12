@@ -1,6 +1,9 @@
 package filemgmt
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestWriteCSS(t *testing.T) {
 	//Tests if the WriteCSS function is writing valid CSS to the test files
@@ -15,5 +18,5 @@ func TestParseCSSFromFile(t *testing.T) {
 	//Tests if CSS parsing functionality is valid
 
 	cssPath := "../testdata/filemgmt/test.css"
-	ParseCSSFromFile(&cssPath)
+	fmt.Print(ParseCSSFromFile(&cssPath))
 }

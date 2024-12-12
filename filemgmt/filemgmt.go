@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"io"
 	"os"
+
+	"github.com/gorilla/css/scanner"
 )
 
 type Property struct {
@@ -12,8 +14,17 @@ type Property struct {
 	value string
 }
 
-func ParseCSSFromFile(filepath *string) {
+// NOTE: at some point maybe make this safer with our own tokenType?
+type CSSToken struct {
+	Type  string
+	Value string
+}
+
+func ParseCSSFromFile(filepath *string) []CSSToken {
 	//takes in a CSS file and returns its properties
+	//as an array of tokens
+	var cssTokens []CSSToken
+
 	file, err := os.OpenFile(*filepath, os.O_RDONLY, 0644)
 	if err != nil {
 		panic(err)
@@ -34,9 +45,17 @@ func ParseCSSFromFile(filepath *string) {
 		if n == 0 {
 			break
 		}
-
-		printBuffer(&buf, true)
+		s := scanner.New(string(buf))
+		tok := s.Next()
+		for tok.Type.String() != "EOF" {
+			var cssTok CSSToken
+			cssTok.Type = tok.Type.String()
+			cssTok.Value = tok.Value
+			cssTokens = append(cssTokens, cssTok)
+			tok = s.Next()
+		}
 	}
+	return cssTokens
 }
 
 func printBuffer(buf *[]byte, asString bool) {
