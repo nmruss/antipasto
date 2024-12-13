@@ -1,6 +1,7 @@
 package filemgmt
 
 import (
+	"fmt"
 	"testing"
 )
 
@@ -11,19 +12,29 @@ func TestUpdateCSSTokenList(t *testing.T) {
 	properties := []CSSToken{
 		{Type: "HASH", Value: "#copy1"},
 		{Type: "CHAR", Value: "{"},
-		{Type: "S", Value: "      /n"},
-		{Type: "HASH", Value: "      /n"},
+		{Type: "S", Value: "\n"},
+		{Type: "S", Value: "      "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
 		{Type: "CHAR", Value: ";"},
+		{Type: "S", Value: "\n"},
+		{Type: "CHAR", Value: "}"},
 	}
 
-	inserts := []CSSProperyInsert{
-		{ParentName: "#copy1", PropertyName: "top", Value: "44px"},
+	var inserts = make(map[string]CSSProperyInsert)
+
+	inserts["#copy1"] = CSSProperyInsert{
+		ParentName:   "#copy1",
+		PropertyName: "top",
+		Value:        "44px",
 	}
+
+	fmt.Println(properties)
 
 	UpdateCSSTokenList(&cssPath, &properties, &inserts)
+
+	fmt.Println(properties)
 
 	for _, property := range properties {
 		if property.Type == "DIMENSION" && property.Value != "44px" {

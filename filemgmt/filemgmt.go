@@ -79,7 +79,44 @@ func printBuffer(buf *[]byte, asString bool) {
 }
 
 // Updates a []CSSToken list based on current []CSSToken list + []CSSPropertyInsert
-func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates *[]CSSProperyInsert) {
+func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates *map[string]CSSProperyInsert) {
+	//NOTE: For now this will only update id's with top and left, width and height dimensions
+
+	//step along the currentProperties list, if you find a token where Value == update.ParentName
+	//start a pointer at the current index
+	//step along the until you see a token that matches propertyName, or until you see a token that matches '}'
+	//if you see a token that matches propertyName, continue to step along until you see a DIMENSION token
+	//update this dimension token to equal update.Value, mark this value as updated in a map?
+	currProps := *currentProperties
+	u := *updates
+
+	for i, currentProperty := range currProps {
+		up, ok := u[currentProperty.Value]
+		if ok {
+			//left := i
+			right := i
+			for currProps[right].Value != "}" {
+				if currProps[right].Type == "IDENT" && currProps[right].Value == up.PropertyName {
+					//search for the next DIMENSION identfier and update the existing value
+					for currProps[right].Type != "DIMENSION" {
+						right++
+					}
+
+					if currProps[right].Type == "CHAR" && currProps[right].Value == "}" {
+						//you reached a "}" before you saw a matching property name, insert
+						//an IDENT, CHAR ':' and DIMENSION token into the currProps list
+						break
+					}
+
+					if currProps[right].Type == "DIMENSION" && currProps[right].Value != up.Value {
+						currProps[right].Value = up.Value
+						break
+					}
+				}
+				right++
+			}
+		}
+	}
 
 }
 
