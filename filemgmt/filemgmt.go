@@ -9,20 +9,23 @@ import (
 	"github.com/gorilla/css/scanner"
 )
 
-type Property struct {
-	name  string
-	value string
-}
-
 // NOTE: at some point maybe make this safer with our own tokenType?
 type CSSToken struct {
 	Type  string
 	Value string
 }
 
-func ParseCSSFromFile(filepath *string) []CSSToken {
-	//takes in a CSS file and returns its properties
-	//as an array of tokens
+// stores property inserts / updates from image data
+// NOTE: maybe these should be more restricted?
+type CSSProperyInsert struct {
+	ParentName   string
+	PropertyName string
+	Value        string
+}
+
+// Takes in a CSS file path and
+// returns its contents as an array of CSSTokens
+func TokenizeCSSFromFile(filepath *string) []CSSToken {
 	var cssTokens []CSSToken
 
 	file, err := os.OpenFile(*filepath, os.O_RDONLY, 0644)
@@ -59,7 +62,7 @@ func ParseCSSFromFile(filepath *string) []CSSToken {
 }
 
 func printBuffer(buf *[]byte, asString bool) {
-	//prints a byte buffer as bytes or a string
+	//Utility function that prints a byte buffer as bytes or a string
 	//followed by a new line character
 	buffer := *buf
 	for n := 0; n < len(buffer); n++ {
@@ -75,38 +78,42 @@ func printBuffer(buf *[]byte, asString bool) {
 	}
 }
 
-func WriteCSS(filepath *string, id string, properties []Property) {
-	//Writes a set of properties to an existing CSS object under the given id
-	//takes an array of type Property
-	// file, err := os.OpenFile(*filepath, os.O_RDWR, 0644)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// defer func() {
-	// 	if err := file.Close(); err != nil {
-	// 		panic(err)
-	// 	}
-	// }()
+// Updates a []CSSToken list based on current []CSSToken list + []CSSPropertyInsert
+func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates *[]CSSProperyInsert) {
 
-	// r := bufio.NewReader(file)
-	// w := bufio.NewWriter(file)
-	// buf := make([]byte, 1024)
-	// for {
-	// 	n, err := r.Read(buf)
-	// 	if err != nil && err != io.EOF {
-	// 		panic(err)
-	// 	}
-
-	// 	if n == 0 {
-	// 		break
-	// 	}
-
-	// 	if _, err := w.Write(buf[:n]); err != nil {
-	// 		panic(err)
-	// 	}
-	// }
-
-	// if err = w.Flush(); err != nil {
-	// 	panic(err)
-	// }
 }
+
+//func WriteCSS(){
+//takes an array of type Property
+// file, err := os.OpenFile(*filepath, os.O_RDWR, 0644)
+// if err != nil {
+// 	panic(err)
+// }
+// defer func() {
+// 	if err := file.Close(); err != nil {
+// 		panic(err)
+// 	}
+// }()
+
+// r := bufio.NewReader(file)
+// w := bufio.NewWriter(file)
+// buf := make([]byte, 1024)
+// for {
+// 	n, err := r.Read(buf)
+// 	if err != nil && err != io.EOF {
+// 		panic(err)
+// 	}
+
+// 	if n == 0 {
+// 		break
+// 	}
+
+// 	if _, err := w.Write(buf[:n]); err != nil {
+// 		panic(err)
+// 	}
+// }
+
+// if err = w.Flush(); err != nil {
+// 	panic(err)
+// }
+//}
