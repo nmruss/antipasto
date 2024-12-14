@@ -17,7 +17,8 @@ type CSSToken struct {
 
 // stores property inserts / updates from image data
 // NOTE: maybe these should be more restricted?
-type CSSProperyInsert struct {
+type CSSPropertyInsert struct {
+	Type         string
 	ParentName   string
 	PropertyName string
 	Value        string
@@ -79,45 +80,91 @@ func printBuffer(buf *[]byte, asString bool) {
 }
 
 // Updates a []CSSToken list based on current []CSSToken list + []CSSPropertyInsert
-func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates *map[string]CSSProperyInsert) {
-	//NOTE: For now this will only update id's with top and left, width and height dimensions
-
-	//step along the currentProperties list, if you find a token where Value == update.ParentName
-	//start a pointer at the current index
-	//step along the until you see a token that matches propertyName, or until you see a token that matches '}'
-	//if you see a token that matches propertyName, continue to step along until you see a DIMENSION token
-	//update this dimension token to equal update.Value, mark this value as updated in a map?
+func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates *[]CSSPropertyInsert) {
 	currProps := *currentProperties
 	u := *updates
 
-	for i, currentProperty := range currProps {
-		up, ok := u[currentProperty.Value]
-		if ok {
-			//left := i
-			right := i
-			for currProps[right].Value != "}" {
-				if currProps[right].Type == "IDENT" && currProps[right].Value == up.PropertyName {
-					//search for the next DIMENSION identfier and update the existing value
-					for currProps[right].Type != "DIMENSION" {
-						right++
-					}
+	//this is O(n^2), could be better possibly with a tree or using a map for constant time lookup
+	for _, update := range u {
+		right := 0
+		propExists := false
 
-					if currProps[right].Type == "CHAR" && currProps[right].Value == "}" {
-						//you reached a "}" before you saw a matching property name, insert
-						//an IDENT, CHAR ':' and DIMENSION token into the currProps list
-						break
+		for right < len(currProps) && currProps[right].Value != "}" {
+			if currProps[right].Value == update.ParentName {
+				//if there is an existing selector (will be of type HASH if an id)
+				for right < len(currProps) && currProps[right].Value != "}" {
+					//search for the next IDENT token with the correct property name
+					if currProps[right].Type == "IDENT" && currProps[right].Value == update.PropertyName {
+						propExists = true
+						for right < len(currProps) && currProps[right].Value != "}" {
+							///search for the next token of update type, update it
+							if currProps[right].Type == update.Type {
+								currProps[right].Value = update.Value
+								break
+							}
+							right++
+						}
 					}
-
-					if currProps[right].Type == "DIMENSION" && currProps[right].Value != up.Value {
-						currProps[right].Value = up.Value
-						break
-					}
+					right++
 				}
-				right++
+
+				if !propExists {
+					fmt.Println("adding property")
+					//If you reach a "}" before you see a matching property name, insert
+					//an IDENT, CHAR ':' and DIMENSION token into the currProps list
+					//along with a char ';' to complete the valid CSS insert
+					newIdentifier := CSSToken{Type: "IDENT", Value: update.PropertyName}
+					newColon := CSSToken{Type: "CHAR", Value: ":"}
+					newDimension := CSSToken{Type: "DIMENSION", Value: update.Value}
+					newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
+					currProps = append(currProps[:right-1], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
+				}
 			}
+
+			right++
 		}
 	}
 
+	*currentProperties = currProps
+
+	// for i, currentProperty := range currProps {
+	// 	updateProperty, ok := u[currentProperty.Value]
+
+	// 	if ok {
+	// 		//left := i
+	// 		right := i
+	// 		for currProps[right].Value != "}" {
+	// 			if currProps[right].Type == "IDENT" && currProps[right].Value == updateProperty.PropertyName {
+	// 				//search for the next DIMENSION identfier and update the existing value
+	// 				for currProps[right].Value != "}" {
+	// 					if currProps[right].Type == "DIMENSION" && currProps[right].Value != updateProperty.Value {
+	// 						currProps[right].Value = updateProperty.Value
+	// 						break
+	// 					}
+	// 					right++
+	// 				}
+	// 			}
+	// 			right++
+	// 		}
+	// 	}
+
+	// 	if !ok {
+	// 		right := i
+	// 		for currProps[right].Value != "}" {
+	// 			if currProps[right].Type == "CHAR" && currProps[right].Value == "}" {
+	// 				//f you reach a "}" before you see a matching property name, insert
+	// 				//an IDENT, CHAR ':' and DIMENSION token into the currProps list
+	// 				newIdentifier := CSSToken{Type: "IDENT", Value: updateProperty.PropertyName}
+	// 				newColon := CSSToken{Type: "CHAR", Value: ":"}
+	// 				newDimension := CSSToken{Type: "DIMENSION", Value: updateProperty.Value + "px"}
+	// 				newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
+	// 				currProps = append(currProps[:right-1], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
+	// 			}
+	// 			right++
+	// 		}
+
+	// 	}
+	// }
 }
 
 //func WriteCSS(){
