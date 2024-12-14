@@ -82,19 +82,19 @@ func TestUpdateCSSTokenList_PropertyAdd(t *testing.T) {
 		t.Fatalf("UpdateCSSTokenList() did not insert a new property correctly")
 	}
 
-	if properties[8].Type != "IDENT" || properties[8].Value != inserts[0].PropertyName {
+	if properties[9].Type != "IDENT" || properties[9].Value != inserts[0].PropertyName {
 		t.Fatalf("UpdateCSSTokenList() did not insert a new IDENT 'left' properly")
 	}
 
-	if properties[9].Type != "CHAR" || properties[9].Value != ":" {
+	if properties[10].Type != "CHAR" || properties[10].Value != ":" {
 		t.Fatalf("UpdateCSSTokenList() did not insert a new CHAR ':' properly")
 	}
 
-	if properties[10].Type != "DIMENSION" || properties[10].Value != inserts[0].Value {
+	if properties[11].Type != "DIMENSION" || properties[11].Value != inserts[0].Value {
 		t.Fatalf("UpdateCSSTokenList() did not insert a new DIMENSION properly")
 	}
 
-	if properties[11].Type != "CHAR" || properties[11].Value != ";" {
+	if properties[12].Type != "CHAR" || properties[12].Value != ";" {
 		t.Fatalf("UpdateCSSTokenList() did not insert a new CHAR ';' properly")
 	}
 }
@@ -137,40 +137,43 @@ func TestUpdateCSSTokenList_SelectorAdd(t *testing.T) {
 
 	UpdateCSSTokenList(&cssPath, &properties, &inserts)
 
-	if len(properties) < 13 {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new selector properly")
+	expectedProperties := []CSSToken{
+		{Type: "HASH", Value: "#copy1"},
+		{Type: "CHAR", Value: "{"},
+		{Type: "S", Value: "\n"},
+		{Type: "S", Value: "      "},
+		{Type: "IDENT", Value: "top"},
+		{Type: "CHAR", Value: ":"},
+		{Type: "DIMENSION", Value: "10px"},
+		{Type: "CHAR", Value: ";"},
+		{Type: "S", Value: "\n"},
+		{Type: "CHAR", Value: "}"},
+		{Type: "HASH", Value: "#copy2"},
+		{Type: "CHAR", Value: "{"},
+		{Type: "S", Value: "\n"},
+		{Type: "S", Value: "      "},
+		{Type: "IDENT", Value: "left"},
+		{Type: "CHAR", Value: ":"},
+		{Type: "DIMENSION", Value: "30px"},
+		{Type: "CHAR", Value: ";"},
+		{Type: "S", Value: "\n"},
+		{Type: "CHAR", Value: "}"},
+		{Type: "HASH", Value: "#newCopyID"},
+		{Type: "CHAR", Value: "{"},
+		{Type: "S", Value: "\n"},
+		{Type: "S", Value: "      "},
+		{Type: "IDENT", Value: "top"},
+		{Type: "CHAR", Value: ":"},
+		{Type: "DIMENSION", Value: "20px"},
+		{Type: "CHAR", Value: ";"},
+		{Type: "S", Value: "\n"},
+		{Type: "CHAR", Value: "}"},
 	}
 
-	if properties[10].Type != "HASH" || properties[8].Value != inserts[0].PropertyName {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new HASH '#newCopyID' properly")
-	}
-
-	if properties[11].Type != "CHAR" || properties[9].Value != "{" {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new CHAR '{' properly")
-	}
-
-	if properties[12].Type != "S" || properties[10].Value != "\n    " {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new S token properly")
-	}
-
-	if properties[13].Type != "IDENT" || properties[11].Value != "top" {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new IDENT 'top' properly")
-	}
-
-	if properties[12].Type != "CHAR" || properties[12].Value != ":" {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new CHAR ':' properly")
-	}
-
-	if properties[13].Type != "CHAR" || properties[13].Value != ":" {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new DIMENSION '20px' properly")
-	}
-
-	if properties[14].Type != "S" || properties[14].Value != "\n    " {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new S token properly")
-	}
-
-	if properties[15].Type != "CHAR" || properties[15].Value != "}" {
-		t.Fatalf("UpdateCSSTokenList() did not insert a new CHAR '}' token properly")
+	for i, v := range expectedProperties {
+		if properties[i] != v {
+			t.Fatalf("UpdateCSSTokenList() Failed to place expected properties at Token Number %d; Expected: %s, Got: %s", i, v, properties[i])
+		}
 	}
 }
 

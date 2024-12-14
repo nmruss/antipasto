@@ -119,7 +119,7 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 					newColon := CSSToken{Type: "CHAR", Value: ":"}
 					newDimension := CSSToken{Type: update.Type, Value: update.Value}
 					newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
-					currProps = append(currProps[:right-1], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
+					currProps = append(currProps[:right], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
 				}
 			}
 			right++
@@ -127,8 +127,28 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 
 		//if you've reached a "}" and the selector does not exist
 		if !selectorExists {
-			fmt.Println("adding a new selector here")
+			var selectorType string
 
+			switch update.ParentName[0] {
+			case '#':
+				selectorType = "HASH"
+			case '.':
+				selectorType = "DOT"
+			}
+
+			//newIdentifier := CSSToken{Type: selectorType, Value: update.PropertyName}
+			currProps = append(currProps, []CSSToken{
+				{Type: selectorType, Value: update.ParentName},
+				{Type: "CHAR", Value: "{"},
+				{Type: "S", Value: "\n"},
+				{Type: "S", Value: "      "},
+				{Type: "IDENT", Value: update.PropertyName},
+				{Type: "CHAR", Value: ":"},
+				{Type: update.Type, Value: update.Value},
+				{Type: "CHAR", Value: ";"},
+				{Type: "S", Value: "\n"},
+				{Type: "CHAR", Value: "}"},
+			}...)
 		}
 	}
 
