@@ -88,12 +88,15 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 	for _, update := range u {
 		right := 0
 		propExists := false
+		selectorExists := false
 
-		for right < len(currProps) && currProps[right].Value != "}" {
+		for right < len(currProps) {
+			//if there is an existing selector (will be of type HASH if an id)
 			if currProps[right].Value == update.ParentName {
-				//if there is an existing selector (will be of type HASH if an id)
+				selectorExists = true
+
+				//search for the next IDENT token with the correct property name
 				for right < len(currProps) && currProps[right].Value != "}" {
-					//search for the next IDENT token with the correct property name
 					if currProps[right].Type == "IDENT" && currProps[right].Value == update.PropertyName {
 						propExists = true
 						for right < len(currProps) && currProps[right].Value != "}" {
@@ -109,19 +112,23 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 				}
 
 				if !propExists {
-					fmt.Println("adding property")
 					//If you reach a "}" before you see a matching property name, insert
 					//an IDENT, CHAR ':' and DIMENSION token into the currProps list
 					//along with a char ';' to complete the valid CSS insert
 					newIdentifier := CSSToken{Type: "IDENT", Value: update.PropertyName}
 					newColon := CSSToken{Type: "CHAR", Value: ":"}
-					newDimension := CSSToken{Type: "DIMENSION", Value: update.Value}
+					newDimension := CSSToken{Type: update.Type, Value: update.Value}
 					newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
 					currProps = append(currProps[:right-1], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
 				}
 			}
-
 			right++
+		}
+
+		//if you've reached a "}" and the selector does not exist
+		if !selectorExists {
+			fmt.Println("adding a new selector here")
+
 		}
 	}
 
