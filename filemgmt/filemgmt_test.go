@@ -22,6 +22,19 @@ func TestUpdateCSSTokenList_PropertyUpdate(t *testing.T) {
 		{Type: "CHAR", Value: "}"},
 	}
 
+	expectedProperties := []CSSToken{
+		{Type: "HASH", Value: "#copy1"},
+		{Type: "CHAR", Value: "{"},
+		{Type: "S", Value: "\n"},
+		{Type: "S", Value: "      "},
+		{Type: "IDENT", Value: "top"},
+		{Type: "CHAR", Value: ":"},
+		{Type: "DIMENSION", Value: "44px"},
+		{Type: "CHAR", Value: ";"},
+		{Type: "S", Value: "\n"},
+		{Type: "CHAR", Value: "}"},
+	}
+
 	var inserts []CSSPropertyInsert
 
 	inserts = append(inserts, CSSPropertyInsert{
@@ -33,9 +46,9 @@ func TestUpdateCSSTokenList_PropertyUpdate(t *testing.T) {
 
 	UpdateCSSTokenList(&cssPath, &properties, &inserts)
 
-	for _, property := range properties {
-		if property.Type == "DIMENSION" && property.Value != "44px" {
-			t.Fatalf("UpdateCSSTokenList() failed to update DIMENSION token on #copy1")
+	for i, v := range expectedProperties {
+		if properties[i] != v {
+			t.Fatalf("UpdateCSSTokenList() Failed to place expected properties at Token Number %d; Expected: %s, Got: %s", i, v, properties[i])
 		}
 	}
 }
