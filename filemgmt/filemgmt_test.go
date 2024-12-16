@@ -211,3 +211,16 @@ func TestTokenizeCSSFromFile(t *testing.T) {
 	cssPath := "../testdata/filemgmt/test.css"
 	TokenizeCSSFromFile(&cssPath)
 }
+
+func TestWriteCSS(t *testing.T) {
+	cssPath := "../testdata/filemgmt/test.css"
+	var updates []CSSPropertyInsert
+	updates = append(updates, CSSPropertyInsert{
+		ParentName:   "#hello",
+		PropertyName: "top",
+		Value:        "200px",
+		Type:         "DIMENSION",
+	})
+
+	WriteCSS(&cssPath, &updates, "../testdata/filemgmt/out.css")
+}

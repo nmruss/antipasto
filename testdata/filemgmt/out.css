@@ -1,0 +1,13 @@
+#hello{
+    top:1100px;
+}
+
+#anotherid{
+    top:40px;
+}
+
+@media screen and (width:300px) {    
+    div{
+        background:green;
+    }
+}

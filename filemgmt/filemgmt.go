@@ -2,8 +2,6 @@ package filemgmt
 
 import (
 	"bufio"
-	"fmt"
-	"io"
 	"os"
 
 	"github.com/gorilla/css/scanner"
@@ -24,7 +22,26 @@ type CSSPropertyInsert struct {
 	Value        string
 }
 
-// Takes in a CSS file path and
+// splits by curlybrace, returning the contained curlybrace
+func splitByCurlyBrace(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+
+	for i := 0; i < len(data); i++ {
+		if data[i] == '}' {
+			return i + 1, data[:i+1], nil
+		}
+	}
+
+	if atEOF {
+		return len(data), data, nil
+	}
+
+	return 0, nil, nil
+}
+
+// Takes in a CSS file path, opens the file and
 // returns its contents as an array of CSSTokens
 func TokenizeCSSFromFile(filepath *string) []CSSToken {
 	var cssTokens []CSSToken
@@ -39,19 +56,16 @@ func TokenizeCSSFromFile(filepath *string) []CSSToken {
 		}
 	}()
 
-	r := bufio.NewReader(file)
-	buf := make([]byte, 1024)
-	for {
-		n, err := r.Read(buf)
-		if err != nil && err != io.EOF {
-			panic(err)
-		}
-		if n == 0 {
-			break
-		}
-		s := scanner.New(string(buf))
+	r := bufio.NewScanner(file)
+	r.Split(splitByCurlyBrace)
+	for r.Scan() {
+		s := scanner.New(r.Text())
 		tok := s.Next()
-		for tok.Type.String() != "EOF" {
+		for tok.Type != scanner.TokenEOF && tok.Type != scanner.TokenError {
+			//NOTE: if needed to deal with replacement UTF-8 character
+			// if strings.ContainsRune(tok.Value, '\uFFFD') {
+			// 	break
+			// }
 			var cssTok CSSToken
 			cssTok.Type = tok.Type.String()
 			cssTok.Value = tok.Value
@@ -60,23 +74,6 @@ func TokenizeCSSFromFile(filepath *string) []CSSToken {
 		}
 	}
 	return cssTokens
-}
-
-func printBuffer(buf *[]byte, asString bool) {
-	//Utility function that prints a byte buffer as bytes or a string
-	//followed by a new line character
-	buffer := *buf
-	for n := 0; n < len(buffer); n++ {
-		if asString {
-			fmt.Print(string(buffer[n]))
-		} else {
-			fmt.Print(buffer[n])
-		}
-		if buffer[n] == 0 {
-			fmt.Println()
-			break
-		}
-	}
 }
 
 // Updates a []CSSToken list based on current []CSSToken list + []CSSPropertyInsert
@@ -155,78 +152,52 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 	}
 
 	*currentProperties = currProps
-
-	// for i, currentProperty := range currProps {
-	// 	updateProperty, ok := u[currentProperty.Value]
-
-	// 	if ok {
-	// 		//left := i
-	// 		right := i
-	// 		for currProps[right].Value != "}" {
-	// 			if currProps[right].Type == "IDENT" && currProps[right].Value == updateProperty.PropertyName {
-	// 				//search for the next DIMENSION identfier and update the existing value
-	// 				for currProps[right].Value != "}" {
-	// 					if currProps[right].Type == "DIMENSION" && currProps[right].Value != updateProperty.Value {
-	// 						currProps[right].Value = updateProperty.Value
-	// 						break
-	// 					}
-	// 					right++
-	// 				}
-	// 			}
-	// 			right++
-	// 		}
-	// 	}
-
-	// 	if !ok {
-	// 		right := i
-	// 		for currProps[right].Value != "}" {
-	// 			if currProps[right].Type == "CHAR" && currProps[right].Value == "}" {
-	// 				//f you reach a "}" before you see a matching property name, insert
-	// 				//an IDENT, CHAR ':' and DIMENSION token into the currProps list
-	// 				newIdentifier := CSSToken{Type: "IDENT", Value: updateProperty.PropertyName}
-	// 				newColon := CSSToken{Type: "CHAR", Value: ":"}
-	// 				newDimension := CSSToken{Type: "DIMENSION", Value: updateProperty.Value + "px"}
-	// 				newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
-	// 				currProps = append(currProps[:right-1], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
-	// 			}
-	// 			right++
-	// 		}
-
-	// 	}
-	// }
 }
 
-//func WriteCSS(){
-//takes an array of type Property
-// file, err := os.OpenFile(*filepath, os.O_RDWR, 0644)
-// if err != nil {
-// 	panic(err)
+func WriteCSS(filepath *string, updates *[]CSSPropertyInsert, outpath string) {
+	// takes an existing css file path
+	// and a list of CSS token updates
+	// wries the listed CSS token updates to the file at path
+	file, err := os.OpenFile(outpath, os.O_RDWR, 0644)
+	fileCSSTokens := TokenizeCSSFromFile(filepath)
+	UpdateCSSTokenList(filepath, &fileCSSTokens, updates)
+
+	if err != nil {
+		panic(err)
+	}
+	defer func() {
+		if err := file.Close(); err != nil {
+			panic(err)
+		}
+	}()
+
+	w := bufio.NewWriter(file)
+	var i int
+	for i < len(fileCSSTokens) {
+		if _, err := w.Write([]byte(fileCSSTokens[i].Value)); err != nil {
+			panic(err)
+		}
+		i++
+	}
+
+	if err = w.Flush(); err != nil {
+		panic(err)
+	}
+}
+
+// func printBuffer(buf *[]byte, asString bool) {
+// 	//Utility function that prints a byte buffer as bytes or a string
+// 	//followed by a new line character
+// 	buffer := *buf
+// 	for n := 0; n < len(buffer); n++ {
+// 		if asString {
+// 			fmt.Print(string(buffer[n]))
+// 		} else {
+// 			fmt.Print(buffer[n])
+// 		}
+// 		if buffer[n] == 0 {
+// 			fmt.Println()
+// 			break
+// 		}
+// 	}
 // }
-// defer func() {
-// 	if err := file.Close(); err != nil {
-// 		panic(err)
-// 	}
-// }()
-
-// r := bufio.NewReader(file)
-// w := bufio.NewWriter(file)
-// buf := make([]byte, 1024)
-// for {
-// 	n, err := r.Read(buf)
-// 	if err != nil && err != io.EOF {
-// 		panic(err)
-// 	}
-
-// 	if n == 0 {
-// 		break
-// 	}
-
-// 	if _, err := w.Write(buf[:n]); err != nil {
-// 		panic(err)
-// 	}
-// }
-
-// if err = w.Flush(); err != nil {
-// 	panic(err)
-// }
-//}

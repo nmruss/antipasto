@@ -1,11 +1,10 @@
 ------ THINGS NEEDED ------
-
 Image Parser
 -This image parsing functionality should return:
     -The top left corner of the image (transparency included for png's)
     -The size of the image
     -A quantized and trimmed (to alpha's) version of the image
-    -Support for 2x images
+    -Support for 2x images?
 
 CLI interface
 -A cli interface with functions for:
@@ -13,7 +12,6 @@ CLI interface
     -Help menu
     -Initializing pack functionality on a single banner
     -Listing banner folders available for processing
-    -Look into Cobra?
 
 File Writing
 -A function for writing valid html and css
