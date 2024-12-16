@@ -111,15 +111,17 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 					right++
 				}
 
+				//If you reach a "}" before you see a matching property name, insert
+				//an IDENT, CHAR ':' and DIMENSION token into the currProps list
+				//along with a char ';' to complete the valid CSS insert
 				if !propExists {
-					//If you reach a "}" before you see a matching property name, insert
-					//an IDENT, CHAR ':' and DIMENSION token into the currProps list
-					//along with a char ';' to complete the valid CSS insert
+					newTab := CSSToken{Type: "S", Value: "      "}
 					newIdentifier := CSSToken{Type: "IDENT", Value: update.PropertyName}
 					newColon := CSSToken{Type: "CHAR", Value: ":"}
 					newDimension := CSSToken{Type: update.Type, Value: update.Value}
 					newSemicolon := CSSToken{Type: "CHAR", Value: ";"}
-					currProps = append(currProps[:right], append([]CSSToken{newIdentifier, newColon, newDimension, newSemicolon}, currProps[right:]...)...)
+					newReturn := CSSToken{Type: "S", Value: "\n"}
+					currProps = append(currProps[:right], append([]CSSToken{newTab, newIdentifier, newColon, newDimension, newSemicolon, newReturn}, currProps[right:]...)...)
 				}
 			}
 			right++
