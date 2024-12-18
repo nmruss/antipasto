@@ -2,6 +2,7 @@ package filemgmt
 
 import (
 	"bufio"
+	"fmt"
 	"os"
 
 	"github.com/gorilla/css/scanner"
@@ -159,9 +160,6 @@ func WriteCSS(filepath *string, updates *[]CSSPropertyInsert, outpath string) {
 	// and a list of CSS token updates
 	// wries the listed CSS token updates to the file at path
 	file, err := os.OpenFile(outpath, os.O_RDWR, 0644)
-	fileCSSTokens := TokenizeCSSFromFile(filepath)
-	UpdateCSSTokenList(filepath, &fileCSSTokens, updates)
-
 	if err != nil {
 		panic(err)
 	}
@@ -170,6 +168,17 @@ func WriteCSS(filepath *string, updates *[]CSSPropertyInsert, outpath string) {
 			panic(err)
 		}
 	}()
+
+	fileCSSTokens := TokenizeCSSFromFile(filepath)
+	fmt.Println(fileCSSTokens)
+	UpdateCSSTokenList(filepath, &fileCSSTokens, updates)
+
+	//clear file contents
+	//NOTE: This can probably be made more
+	//sophisticated by only changing necessary lines
+	if err := os.Truncate(outpath, 0); err != nil {
+		panic(err)
+	}
 
 	w := bufio.NewWriter(file)
 	var i int
