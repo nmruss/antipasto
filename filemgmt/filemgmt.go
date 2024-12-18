@@ -2,7 +2,6 @@ package filemgmt
 
 import (
 	"bufio"
-	"fmt"
 	"os"
 
 	"github.com/gorilla/css/scanner"
@@ -113,7 +112,7 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 				//an IDENT, CHAR ':' and DIMENSION token into the currProps list
 				//along with a char ';' to complete the valid CSS insert
 				if !propExists {
-					newTab := CSSToken{Type: "S", Value: "      "}
+					newTab := CSSToken{Type: "S", Value: "    "}
 					newIdentifier := CSSToken{Type: "IDENT", Value: update.PropertyName}
 					newColon := CSSToken{Type: "CHAR", Value: ":"}
 					newDimension := CSSToken{Type: update.Type, Value: update.Value}
@@ -138,10 +137,11 @@ func UpdateCSSTokenList(filepath *string, currentProperties *[]CSSToken, updates
 
 			//newIdentifier := CSSToken{Type: selectorType, Value: update.PropertyName}
 			currProps = append(currProps, []CSSToken{
+				{Type: "S", Value: "\n\n"},
 				{Type: selectorType, Value: update.ParentName},
 				{Type: "CHAR", Value: "{"},
 				{Type: "S", Value: "\n"},
-				{Type: "S", Value: "      "},
+				{Type: "S", Value: "    "},
 				{Type: "IDENT", Value: update.PropertyName},
 				{Type: "CHAR", Value: ":"},
 				{Type: update.Type, Value: update.Value},
@@ -170,7 +170,6 @@ func WriteCSS(filepath *string, updates *[]CSSPropertyInsert, outpath string) {
 	}()
 
 	fileCSSTokens := TokenizeCSSFromFile(filepath)
-	fmt.Println(fileCSSTokens)
 	UpdateCSSTokenList(filepath, &fileCSSTokens, updates)
 
 	//clear file contents

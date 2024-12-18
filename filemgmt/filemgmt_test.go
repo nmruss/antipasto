@@ -61,7 +61,7 @@ func TestUpdateCSSTokenList_PropertyAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy1"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -71,7 +71,7 @@ func TestUpdateCSSTokenList_PropertyAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy3"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -84,13 +84,13 @@ func TestUpdateCSSTokenList_PropertyAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy1"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
 		{Type: "CHAR", Value: ";"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "left"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -100,7 +100,7 @@ func TestUpdateCSSTokenList_PropertyAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy3"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -136,7 +136,7 @@ func TestUpdateCSSTokenList_SelectorAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy1"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -146,7 +146,7 @@ func TestUpdateCSSTokenList_SelectorAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy2"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "left"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "30px"},
@@ -170,7 +170,7 @@ func TestUpdateCSSTokenList_SelectorAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy1"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "10px"},
@@ -180,17 +180,18 @@ func TestUpdateCSSTokenList_SelectorAdd(t *testing.T) {
 		{Type: "HASH", Value: "#copy2"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "left"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "30px"},
 		{Type: "CHAR", Value: ";"},
 		{Type: "S", Value: "\n"},
 		{Type: "CHAR", Value: "}"},
+		{Type: "S", Value: "\n\n"},
 		{Type: "HASH", Value: "#newCopyID"},
 		{Type: "CHAR", Value: "{"},
 		{Type: "S", Value: "\n"},
-		{Type: "S", Value: "      "},
+		{Type: "S", Value: "    "},
 		{Type: "IDENT", Value: "top"},
 		{Type: "CHAR", Value: ":"},
 		{Type: "DIMENSION", Value: "20px"},
@@ -213,12 +214,28 @@ func TestTokenizeCSSFromFile(t *testing.T) {
 }
 
 func TestWriteCSS(t *testing.T) {
+	//Tests appending properties and selectors to a css file
 	cssPath := "../testdata/filemgmt/test.css"
 	var updates []CSSPropertyInsert
+
 	updates = append(updates, CSSPropertyInsert{
 		ParentName:   "#hello",
 		PropertyName: "top",
 		Value:        "200px",
+		Type:         "DIMENSION",
+	})
+
+	updates = append(updates, CSSPropertyInsert{
+		ParentName:   "#newSelector",
+		PropertyName: "top",
+		Value:        "20px",
+		Type:         "DIMENSION",
+	})
+
+	updates = append(updates, CSSPropertyInsert{
+		ParentName:   "#newSelector",
+		PropertyName: "left",
+		Value:        "40px",
 		Type:         "DIMENSION",
 	})
 
