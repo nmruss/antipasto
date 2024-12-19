@@ -23,7 +23,7 @@ var generateCmd = &cobra.Command{
 			return
 		}
 
-		createFoldersAtPath(args[0])
+		createProjectFoldersAtPath(args[0])
 	},
 }
 
@@ -38,22 +38,23 @@ func exists(path string) (bool, error) {
 	return false, err
 }
 
-func createFoldersAtPath(rootPath string) {
-	folderExists, err := exists(rootPath)
-	mkDirErr := os.MkdirAll(rootPath, 0755)
-
-	if mkDirErr != nil {
-		panic(mkDirErr)
+func createProjectFoldersAtPath(rootPath string) {
+	rootFolderExists, rootFolderErr := exists(rootPath)
+	if rootFolderErr != nil {
+		panic(rootFolderErr)
 	}
 
-	if err != nil {
-		panic(err)
-	}
-
-	if folderExists {
+	if rootFolderExists {
 		fmt.Println("Folder already exists, please pass a new path for project generation")
 	} else {
+		dirsToMake := []string{rootPath, rootPath + "/input", rootPath + "/output", rootPath + "/output/300x250", rootPath + "/output/300x250/styles", rootPath + "/output/300x250/src"}
+		for _, dir := range dirsToMake {
+			mkDirErr := os.MkdirAll(dir, 0755)
+			if mkDirErr != nil {
+				panic(mkDirErr)
+			}
+		}
+
 		fmt.Printf("New project folder created at %s \n", rootPath)
 	}
-
 }
