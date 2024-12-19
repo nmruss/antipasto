@@ -9,6 +9,8 @@ import (
 
 func init() {
 	rootCmd.AddCommand(generateCmd)
+	generateCmd.Flags().String("config", "default.apconfig", "Specifies an .apconfig configuration file for project generation")
+	//NOTE: add flags for asset size, and a way to mark this in the configuration file
 }
 
 var generateCmd = &cobra.Command{
@@ -22,7 +24,7 @@ var generateCmd = &cobra.Command{
 			cmd.PrintErrf("No arguments found. Please provide an empty folder path as the first argument\n")
 			return
 		}
-
+		//configFileName, _ := cmd.LocalFlags().GetString("config")
 		createProjectFoldersAtPath(args[0])
 	},
 }
@@ -57,4 +59,31 @@ func createProjectFoldersAtPath(rootPath string) {
 
 		fmt.Printf("New project folder created at %s \n", rootPath)
 	}
+
 }
+
+// func writeCSSFromConfigurationFile(cssFilePath string, configPath string) {
+
+// 	file, err := os.OpenFile(outpath, os.O_RDWR, 0644)
+// 	if err != nil {
+// 		panic(err)
+// 	}
+// 	defer func() {
+// 		if err := file.Close(); err != nil {
+// 			panic(err)
+// 		}
+// 	}()
+
+// 	w := bufio.NewWriter(file)
+// 	var i int
+// 	for i < len(fileCSSTokens) {
+// 		if _, err := w.Write([]byte(fileCSSTokens[i].Value)); err != nil {
+// 			panic(err)
+// 		}
+// 		i++
+// 	}
+
+// 	if err = w.Flush(); err != nil {
+// 		panic(err)
+// 	}
+// }

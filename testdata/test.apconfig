@@ -1,0 +1,11 @@
+AP_HTML_TEMPLATE
+<!DOCTYPE html> <html lang="en"><html>
+AP_HTML_TEMPLATE_END
+
+AP_JS_TEMPLATE
+function main(){ console.log('hello') }
+AP_JS_TEMPLATE_END
+
+AP_CSS_TEMPLATE
+.div { position: absolute; }
+AP_CSS_TEMPLATE_END
