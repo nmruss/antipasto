@@ -9,7 +9,7 @@
 antipasto
 
 # Ignore Test Folder Generation
-./newProject/*
+./NewProject/*
 
 # Test binary, built with `go test -c`
 *.test
