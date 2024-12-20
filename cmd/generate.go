@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"errors"
 	"fmt"
+	"nmruss/antipasto/configuration"
 	"os"
 
 	"github.com/spf13/cobra"
@@ -24,23 +26,13 @@ var generateCmd = &cobra.Command{
 			cmd.PrintErrf("No arguments found. Please provide an empty folder path as the first argument\n")
 			return
 		}
-		//configFileName, _ := cmd.LocalFlags().GetString("config")
+		configFileName, _ := cmd.LocalFlags().GetString("config")
 		createProjectFoldersAtPath(args[0])
+		writeProjectFilesAtPath(args[0], configFileName)
 	},
 }
 
-func exists(path string) (bool, error) {
-	_, err := os.Stat(path)
-	if err == nil {
-		return true, nil
-	}
-	if os.IsNotExist(err) {
-		return false, nil
-	}
-	return false, err
-}
-
-func createProjectFoldersAtPath(rootPath string) {
+func createProjectFoldersAtPath(rootPath string) error {
 	rootFolderExists, rootFolderErr := exists(rootPath)
 	if rootFolderErr != nil {
 		panic(rootFolderErr)
@@ -59,7 +51,41 @@ func createProjectFoldersAtPath(rootPath string) {
 
 		fmt.Printf("New project folder created at %s \n", rootPath)
 	}
+	return nil
+}
 
+// Writes project files from a configuration file to folders at rootPath
+func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
+	rootFolderExists, rootFolderErr := exists(rootPath)
+	if rootFolderErr != nil {
+		panic(rootFolderErr)
+	}
+	if !rootFolderExists {
+		return errors.New("specified project folder does not exist")
+	}
+
+	config := configuration.ParseConfigurationFile(cfilePath)
+	if config.DefaultHTML != "" {
+		file, err := os.Create(rootPath + "/index.html")
+		if err != nil {
+			return err
+		}
+
+		file.Write([]byte(config.DefaultHTML))
+	}
+
+	return nil
+}
+
+func exists(path string) (bool, error) {
+	_, err := os.Stat(path)
+	if err == nil {
+		return true, nil
+	}
+	if os.IsNotExist(err) {
+		return false, nil
+	}
+	return false, err
 }
 
 // func writeCSSFromConfigurationFile(cssFilePath string, configPath string) {
