@@ -7,9 +7,9 @@ import (
 
 // Contains configuration items, such as the default write config when generating a new project
 type APConfig struct {
-	DefaultHTML    string
-	DefaultJS      string
-	DefaultStyling string
+	DefaultHTML    []string
+	DefaultJS      []string
+	DefaultStyling []string
 }
 
 type scanState int
@@ -62,11 +62,11 @@ func ParseConfigurationFile(configPath string) APConfig {
 
 		switch state {
 		case html:
-			returnConfig.DefaultHTML += currentLine
+			returnConfig.DefaultHTML = append(returnConfig.DefaultHTML, currentLine+"\n")
 		case css:
-			returnConfig.DefaultStyling += currentLine
+			returnConfig.DefaultStyling = append(returnConfig.DefaultStyling, currentLine+"\n")
 		case js:
-			returnConfig.DefaultJS += currentLine
+			returnConfig.DefaultJS = append(returnConfig.DefaultJS, currentLine+"\n")
 		}
 	}
 

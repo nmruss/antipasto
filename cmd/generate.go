@@ -54,7 +54,7 @@ func createProjectFoldersAtPath(rootPath string) error {
 	return nil
 }
 
-// Writes project files from a configuration file to folders at rootPath
+// Write project files from a configuration file to folders at rootPath
 func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
 	rootFolderExists, rootFolderErr := exists(rootPath)
 	if rootFolderErr != nil {
@@ -65,13 +65,14 @@ func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
 	}
 
 	config := configuration.ParseConfigurationFile(cfilePath)
-	if config.DefaultHTML != "" {
+	if len(config.DefaultHTML) > 0 {
 		file, err := os.Create(rootPath + "/index.html")
 		if err != nil {
 			return err
 		}
-
-		file.Write([]byte(config.DefaultHTML))
+		for _, s := range config.DefaultHTML {
+			file.WriteString(s)
+		}
 	}
 
 	return nil
