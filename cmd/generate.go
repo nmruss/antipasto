@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"nmruss/antipasto/configuration"
 	"os"
+	"strconv"
 
 	"github.com/spf13/cobra"
 )
@@ -27,12 +28,14 @@ var generateCmd = &cobra.Command{
 			return
 		}
 		configFileName, _ := cmd.LocalFlags().GetString("config")
-		createProjectFoldersAtPath(args[0])
-		writeProjectFilesAtPath(args[0], configFileName)
+
+		config := configuration.ParseConfigurationFile(configFileName)
+		createProjectFoldersAtPath(args[0], config)
+		writeProjectFilesAtPath(args[0], config)
 	},
 }
 
-func createProjectFoldersAtPath(rootPath string) error {
+func createProjectFoldersAtPath(rootPath string, config configuration.APConfig) error {
 	rootFolderExists, rootFolderErr := exists(rootPath)
 	if rootFolderErr != nil {
 		panic(rootFolderErr)
@@ -41,7 +44,10 @@ func createProjectFoldersAtPath(rootPath string) error {
 	if rootFolderExists {
 		fmt.Println("Folder already exists, please pass a new path for project generation")
 	} else {
-		dirsToMake := []string{rootPath, rootPath + "/input", rootPath + "/output", rootPath + "/output/300x250", rootPath + "/output/300x250/styles", rootPath + "/output/300x250/src"}
+		widthStr := strconv.Itoa(config.Size[0])
+		heightStr := strconv.Itoa(config.Size[1])
+		sizeStr := widthStr + "x" + heightStr
+		dirsToMake := []string{rootPath, rootPath + "/input", rootPath + "/output", rootPath + "/output/" + sizeStr, rootPath + "/output/" + sizeStr + "/styles", rootPath + "/output/" + sizeStr + "/src"}
 		for _, dir := range dirsToMake {
 			mkDirErr := os.MkdirAll(dir, 0755)
 			if mkDirErr != nil {
@@ -55,7 +61,7 @@ func createProjectFoldersAtPath(rootPath string) error {
 }
 
 // Write project files from a configuration file to folders at rootPath
-func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
+func writeProjectFilesAtPath(rootPath string, config configuration.APConfig) error {
 	rootFolderExists, rootFolderErr := exists(rootPath)
 	if rootFolderErr != nil {
 		panic(rootFolderErr)
@@ -64,10 +70,10 @@ func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
 		return errors.New("specified project folder does not exist")
 	}
 
-	config := configuration.ParseConfigurationFile(cfilePath)
-
 	if len(config.DefaultHTML) > 0 {
-		file, err := os.Create(rootPath + "/output/300x250/index.html")
+		widthStr := strconv.Itoa(config.Size[0])
+		heightStr := strconv.Itoa(config.Size[1])
+		file, err := os.Create(rootPath + "/output/" + widthStr + "x" + heightStr + "/index.html")
 		if err != nil {
 			return err
 		}
