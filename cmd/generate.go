@@ -65,8 +65,9 @@ func writeProjectFilesAtPath(rootPath string, cfilePath string) error {
 	}
 
 	config := configuration.ParseConfigurationFile(cfilePath)
+
 	if len(config.DefaultHTML) > 0 {
-		file, err := os.Create(rootPath + "/index.html")
+		file, err := os.Create(rootPath + "/output/300x250/index.html")
 		if err != nil {
 			return err
 		}
